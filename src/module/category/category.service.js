@@ -2,7 +2,7 @@ const autoBind = require("auto-bind");
 const CategoryModel = require("./category.model");
 const createHttpError = require("http-errors");
 const categoryMessages = require("./category.message");
-const { isValidObjectId, Types } = require("mongoose");
+const { isValidObjectId, Types, default: mongoose } = require("mongoose");
 const { default: slugify } = require("slugify");
 
 class CategoryService {
@@ -30,15 +30,26 @@ class CategoryService {
   }
 
   async find() {
-    return await this.#model
-      .find({ parent: { $exists: false } })
-      // .populate([{ path: "children" }]);
+    return await this.#model.find({ parent: { $exists: false } });
+    // .populate([{ path: "children" }]);
+  }
+
+  async deleteById(id) {
+    if (!id || !mongoose.isValidObjectId(id))
+      throw createHttpError.BadRequest(categoryMessages.invalidId);
+
+    const deletedCategory = await this.#model.findByIdAndDelete(id).lean();
+
+    if (!deletedCategory)
+      throw createHttpError.NotFound(categoryMessages.notFound);
+
+    return deletedCategory;
   }
 
   async checkExistById(id) {
     const category = await this.#model.findById(id);
     if (category) return category;
-    return createHttpError.NotFound(categoryMessages.notFound);
+    throw createHttpError.NotFound(categoryMessages.notFound);
   }
 
   async checkExistBySlug(slug) {

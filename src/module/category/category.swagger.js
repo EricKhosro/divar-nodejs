@@ -41,7 +41,7 @@
  *                  schema:
  *                      $ref: '#/components/schemas/CreateCategory'
  *      responses:
- *          201: 
+ *          201:
  *              description: created
  */
 /**
@@ -52,20 +52,20 @@
  *      tags:
  *          -   Category
  *      responses:
- *          200: 
+ *          200:
  *              description: successfully
  */
 /**
  * @swagger
  * /category/{id}:
  *  delete:
- *      summary: get all categories
+ *      summary: delete category by id
  *      tags:
  *          -   Category
  *      parameters:
  *          -   in: path
  *              name: id
  *      responses:
- *          200: 
+ *          200:
  *              description: successfully
  */
