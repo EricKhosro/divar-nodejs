@@ -1,5 +1,6 @@
 const autoBind = require("auto-bind");
 const CategoryModel = require("./category.model");
+const OptionModel = require("../option/option.model");
 const createHttpError = require("http-errors");
 const categoryMessages = require("./category.message");
 const { isValidObjectId, Types, default: mongoose } = require("mongoose");
@@ -7,10 +8,12 @@ const { default: slugify } = require("slugify");
 
 class CategoryService {
   #model;
+  #optionModel;
 
   constructor() {
     autoBind(this);
     this.#model = CategoryModel;
+    this.#optionModel = OptionModel;
   }
 
   async create(categoryDTO) {
@@ -37,7 +40,7 @@ class CategoryService {
   async deleteById(id) {
     if (!id || !mongoose.isValidObjectId(id))
       throw createHttpError.BadRequest(categoryMessages.invalidId);
-
+    await this.#optionModel.deleteMany({ category: id });
     const deletedCategory = await this.#model.findByIdAndDelete(id).lean();
 
     if (!deletedCategory)
